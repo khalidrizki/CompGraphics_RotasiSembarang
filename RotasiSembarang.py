@@ -18,10 +18,14 @@ def main(list_point):
     win = GraphWin('Rotasi terhadap sembarang sumbu', 600,600)
     win.setCoords(-6,-6,6,6)
     
-    # Menulis judul dan Menggambar sumbu putar
+    # Menulis judul
     title = Text(Point(0, 5.2), 'Memutar balok terhadap garis 3,3,3 - 5,5,5')
     title.draw(win)
     
+    # Menggambar posisi awal balok
+    corners, skeletons = draw(win, list_point, keep=True)
+    
+    # Menggambar sumbu putar
     sumbu = Line(Point(3,3),Point(5,5))
     sumbu.setFill('red')
     sumbu.draw(win)
@@ -35,7 +39,6 @@ def main(list_point):
     teksPangkal.draw(win)
     teksUjung.draw(win)
     
-    
     # Meminta input besar sudut yang akan dirotasi
     entriSudut = Entry(Point(0,-5.2), 5)
     teks = Text(Point(0, -4.8), 'Masukkan sudut putar, lalu klik di manapun pada window')
@@ -47,8 +50,14 @@ def main(list_point):
     sudut = int(entriSudut.getText())
     entriSudut.undraw()
     teks.undraw()
+    
+    # Menuliskan subtitle 'Sudut putar: '
     subtitle = Text(Point(0,-5.2), f'Sudut putar : {sudut}°')
     subtitle.draw(win)
+    
+    # Menghapus posisi awal balok
+    for corner in corners: corner.undraw()
+    for skeleton in skeletons: skeleton.undraw()
         
     # Merotasi balok
     for iterr in range(sudut):
@@ -60,17 +69,18 @@ def main(list_point):
     win.getMouse()
     win.close()
 
-def draw(window, list_point, finished=False):
+def draw(window, list_point, keep=False):
     """
     Fungsi untuk Menggambar titik sudut dan garis kerangka balok
     
     Args: 
         windows (graphics.GraphWin): window dimana objek akan digambar
         list_point (list) : list titik sudut yang akan digambar
-        finished (bool) : flag apakah iterasi ini adalah iterasi terakhir
+        finished (bool) : flag penentu apakah bangun yang telah digambar ingin disimpan atau tidak
         
     Returns:
-        None
+        points (list of Point) : list dari Point yang telah digambar
+        lines (list of Line) : list dari Line yang telah digambar
     """
     
     points = []  # list penampung semua objek Point
@@ -113,11 +123,13 @@ def draw(window, list_point, finished=False):
     
     # Untuk iterasi terakhir, gambar dibiarkan tetap di window
     # Jika bukan iter terakhir, gambar segera di-undraw
-    if not finished:
+    if not keep:
         for point in points:
             point.undraw()
         for line in lines:
             line.undraw()
+            
+    return points, lines
 
 def rotate(list_point):
     """
@@ -192,7 +204,7 @@ def rotate(list_point):
     # Matriks rotasi keseluruhan
     
     M = T_1 @ R45 @R_miu @ Rotasi @Rmiu @ R_45 @ T
-    
+    # Invers T x R(β) x R(-μ) x Rotasi x R(μ) x R(-β) x T
     return (M @ list_point_transpos).T
 
 # Setup koordinat balok
