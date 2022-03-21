@@ -7,8 +7,7 @@ def main(list_point):
     Fungsi untuk menampilkan rotasi balok
     
     Args: 
-        list_point (list) : List titik sudut dari bangun ruang
-        sudut (int) : Seberapa besar bangun ruang tersebut akan diputar (satuan: derajat)
+        list_point (list atau np.array) : List titik sudut dari bangun ruang
         
     Returns:
         None
@@ -42,6 +41,7 @@ def main(list_point):
     # Meminta input besar sudut yang akan dirotasi
     entriSudut = Entry(Point(0,-5.2), 5)
     teks = Text(Point(0, -4.8), 'Masukkan sudut putar, lalu klik di manapun pada window')
+    entriSudut.setFill('white')
     entriSudut.draw(win)
     teks.draw(win)
     
@@ -76,7 +76,7 @@ def draw(window, list_point, keep=False):
     Args: 
         windows (graphics.GraphWin): window dimana objek akan digambar
         list_point (list) : list titik sudut yang akan digambar
-        finished (bool) : flag penentu apakah bangun yang telah digambar ingin disimpan atau tidak
+        keep (bool) : flag penentu apakah bangun yang telah digambar ingin disimpan atau tidak
         
     Returns:
         points (list of Point) : list dari Point yang telah digambar
@@ -202,9 +202,9 @@ def rotate(list_point):
     T_1 = np.linalg.inv(T)
 
     # Matriks rotasi keseluruhan
-    
+    # Rumus: Invers T x R(β) x R(-μ) x Rotasi x R(μ) x R(-β) x T
     M = T_1 @ R45 @R_miu @ Rotasi @Rmiu @ R_45 @ T
-    # Invers T x R(β) x R(-μ) x Rotasi x R(μ) x R(-β) x T
+    
     return (M @ list_point_transpos).T
 
 # Setup koordinat balok
